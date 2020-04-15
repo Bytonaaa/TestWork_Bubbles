@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -26,15 +27,15 @@ public class BubblesSpawner : MonoBehaviour
     [Inject] 
     private readonly DiContainer _container = default;
     
-    public void Awake()
-    {
-        StartCoroutine(SpawnCoroutine());
-    }
-
     private void OnEnable()
     {
         _gameMaster.GameEndEventHandler += OnGameEnd;
+    }
+
+    private void Start()
+    {
         _spawnHalfWidth = _mainCamera.orthographicSize * _mainCamera.aspect;
+        StartCoroutine(SpawnCoroutine());
     }
 
     private void OnDisable()
