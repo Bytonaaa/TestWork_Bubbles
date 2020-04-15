@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
-public class GameMaster : MonoSingleton<GameMaster>
+public class GameMaster : MonoBehaviour
 {
     public event UnityAction<int> ChangeScoreEventHandler;
     public event UnityAction<int> GameEndEventHandler;
@@ -15,17 +12,15 @@ public class GameMaster : MonoSingleton<GameMaster>
         set => ChangeScoreEventHandler?.Invoke(_score = value);
     }
 
+    [Range(1f, 60f)]
     public float m_playSeconds = 60;
-    public float m_secondsLeft;
-    public bool m_isGameActive;
+    public float m_secondsLeft { get; private set; }
     
     private float _startTime;
     private int _score;
     
-    
     private void Awake()
     {
-        m_isGameActive = true;
         m_score = 0;
         _startTime = Time.time;
         m_secondsLeft = 0f;
@@ -36,9 +31,13 @@ public class GameMaster : MonoSingleton<GameMaster>
         m_secondsLeft = Time.time - _startTime;
         if (m_secondsLeft >= m_playSeconds)
         {
-            GameEndEventHandler?.Invoke(m_score);
+            GameOver();
         }
+    }
 
-        m_isGameActive = false;
+    private void GameOver()
+    {
+        GameEndEventHandler?.Invoke(m_score);
+        enabled = false;
     }
 }

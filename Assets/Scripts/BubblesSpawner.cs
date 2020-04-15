@@ -1,22 +1,30 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Zenject;
 using Random = UnityEngine.Random;
 
 public class BubblesSpawner : MonoBehaviour
 {
     public GameObject m_bubblePrefab;
-    public float m_minSecondsDelay;
-    public float m_maxSecondsDelay;
-    [Range(2, 100)]
-    public float m_maxLevel;
-    public float m_minSize;
-    public float m_maxSize;
+    public float m_minSecondsDelay = 0.2f;
+    public float m_maxSecondsDelay = 1f;
+    [Range(1f, 10f)]
+    public float m_maxLevel = 2.5f;
+    public float m_minSize = 0.5f;
+    public float m_maxSize = 1.5f;
 
-    public Vector2 m_spawnPoint;
-    public float m_spawnLineHalfWidth = 1f;
+    public float m_spawnYPos;
+    
+    private float _spawnHalfWidth = -10f;
+
+    [Inject] 
+    private readonly GameMaster _gameMaster = default;
+
+    [Inject] 
+    private readonly Camera _mainCamera = default;
+
+    [Inject] 
+    private readonly DiContainer _container = default;
     
     public void Awake()
     {
@@ -25,34 +33,40 @@ public class BubblesSpawner : MonoBehaviour
 
     private void OnEnable()
     {
-        GameMaster.instance.GameEndEventHandler += OnGameEnd;
+        _gameMaster.GameEndEventHandler += OnGameEnd;
+        _spawnHalfWidth = _mainCamera.orthographicSize * _mainCamera.aspect;
     }
 
     private void OnDisable()
     {
-        GameMaster.instance.GameEndEventHandler -= OnGameEnd;
+        _gameMaster.GameEndEventHandler -= OnGameEnd;
     }
 
     private void OnGameEnd(int score)
     {
         enabled = false;
+        StopAllCoroutines();
     }
 
     private IEnumerator SpawnCoroutine()
     {
         while (true)
         {
-            var instantiatePoint =
-                m_spawnPoint + Vector2.right * Random.Range(-m_spawnLineHalfWidth, m_spawnLineHalfWidth);
-            var bubble = Instantiate(m_bubblePrefab, instantiatePoint, Quaternion.identity);
-            var level = Random.Range(1, m_maxLevel);
+            var level = Random.Range(0.5f, m_maxLevel);
+            var size = Mathf.Lerp(m_maxSize, m_minSize, level / m_maxLevel);
+
+            var spawnHalfWidth =
+                _spawnHalfWidth - size * 0.6f; //Используем 0.6, а не 0.5, чтобы шар даже не косался границы экрана 
+
+            var instantiatePoint = new Vector2(Random.Range(-spawnHalfWidth, spawnHalfWidth), m_spawnYPos);
+            var bubble = _container.InstantiatePrefab(m_bubblePrefab, instantiatePoint, Quaternion.identity, null);
             bubble.GetComponent<Bubble>().SetBubbleLevel(level);
 
-            var size = Mathf.Lerp(m_maxSize, m_minSize, level / m_maxLevel);
             bubble.transform.localScale = new Vector3(size, size, size);
-            
+
             var delay = Random.Range(m_minSecondsDelay, m_maxSecondsDelay);
             yield return new WaitForSeconds(delay);
         }
+        // ReSharper disable once IteratorNeverReturns
     }
 }

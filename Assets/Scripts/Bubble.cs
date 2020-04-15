@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Zenject;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bubble : MonoBehaviour
@@ -10,6 +8,9 @@ public class Bubble : MonoBehaviour
     private float _level;
     private float _speed;
 
+    [Inject]
+    private readonly GameMaster _gameMaster = default;
+    
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -18,8 +19,7 @@ public class Bubble : MonoBehaviour
     public void SetBubbleLevel(float level)
     {
         _level = level;
-        var gameMaster = GameMaster.instance;
-        _speed = _level * (1 + gameMaster.m_secondsLeft / gameMaster.m_playSeconds);
+        _speed = _level * (1 + _gameMaster.m_secondsLeft / _gameMaster.m_playSeconds);
         _rigidbody.velocity = new Vector2(0, _speed);
     }
 
@@ -33,7 +33,7 @@ public class Bubble : MonoBehaviour
 
     public void Damage()
     {
-        GameMaster.instance.m_score += Mathf.FloorToInt(_level);
+        _gameMaster.m_score += Mathf.FloorToInt(_level);
         Destroy(gameObject);
     }
 }

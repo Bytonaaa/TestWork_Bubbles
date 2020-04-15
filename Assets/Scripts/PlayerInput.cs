@@ -1,70 +1,47 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Zenject;
+
 public class PlayerInput : MonoBehaviour
 {
     public float m_raycastDistance = 10f;
     public LayerMask m_targetLayers;
     
-    private Camera _playerCamera;
     private readonly RaycastHit2D[] _rayCastHits = new RaycastHit2D[3];
     private bool _isTouchDown;
     private Ray _touchRay;
-    
+
+    [Inject] private readonly GameMaster _gameMaster = default;
+
+    [Inject] private readonly Camera _camera = default;
     private void OnEnable()
     {
-        GameMaster.instance.GameEndEventHandler += OnGameEnd;
+        _gameMaster.GameEndEventHandler += OnGameEnd;
     }
 
     private void OnDisable()
     {
-        GameMaster.instance.GameEndEventHandler -= OnGameEnd;
-    }
-
-    private void Awake()
-    {
-        _playerCamera = Camera.main;
+        _gameMaster.GameEndEventHandler -= OnGameEnd;
     }
 
     private void Update()
     {
-        if (_playerCamera == null)
+
+        if (Input.GetMouseButtonDown(0))
         {
-            _playerCamera = Camera.main;
-            if (_playerCamera == null)
+            _touchRay = _camera.ScreenPointToRay(Input.mousePosition);
+            
+            var hitsCount = Physics2D.RaycastNonAlloc(_touchRay.origin, _touchRay.direction, _rayCastHits, m_raycastDistance, m_targetLayers);
+
+            for (int i = 0; i < hitsCount; ++i)
             {
-                Debug.LogError("No camera with tag \"MainCamera\" in scene");
-                _isTouchDown = false;
-                return;
+                var hit = _rayCastHits[i];
+                var bubble = hit.transform.GetComponent<Bubble>();
+                if (bubble == null)
+                {
+                    continue;
+                }
+                bubble.Damage();
             }
-        }
-
-        _isTouchDown = Input.GetMouseButton(0);
-        if (_isTouchDown)
-        {
-            _touchRay = _playerCamera.ScreenPointToRay(Input.mousePosition);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (!_isTouchDown)
-        {
-            return;
-        }
-        
-        var hitsCount = Physics2D.RaycastNonAlloc(_touchRay.origin, _touchRay.direction, _rayCastHits, m_raycastDistance, m_targetLayers);
-
-        for (int i = 0; i < hitsCount; ++i)
-        {
-            var hit = _rayCastHits[i];
-            var bubble = hit.transform.GetComponent<Bubble>();
-            if (bubble == null)
-            {
-                continue;
-            }
-            bubble.Damage();
         }
     }
     
