@@ -594,8 +594,8 @@ MonoBehaviour:
   m_minSecondsDelay: 0.2
   m_maxSecondsDelay: 1
   m_maxLevel: 10
-  m_minSize: 0.5
-  m_maxSize: 1.5
+  m_minSize: 0.75
+  m_maxSize: 3
   m_spawnYPos: -7
 --- !u!4 &1105945836
 Transform:
