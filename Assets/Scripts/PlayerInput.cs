@@ -13,6 +13,7 @@ public class PlayerInput : MonoBehaviour
     [Inject] private readonly GameMaster _gameMaster = default;
 
     [Inject] private readonly Camera _camera = default;
+    
     private void OnEnable()
     {
         _gameMaster.GameEndEventHandler += OnGameEnd;
@@ -25,23 +26,24 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-
-        if (Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButtonDown(0))
         {
-            _touchRay = _camera.ScreenPointToRay(Input.mousePosition);
+            return;
+        }
+        
+        _touchRay = _camera.ScreenPointToRay(Input.mousePosition);
             
-            var hitsCount = Physics2D.RaycastNonAlloc(_touchRay.origin, _touchRay.direction, _rayCastHits, m_raycastDistance, m_targetLayers);
+        var hitsCount = Physics2D.RaycastNonAlloc(_touchRay.origin, _touchRay.direction, _rayCastHits, m_raycastDistance, m_targetLayers);
 
-            for (int i = 0; i < hitsCount; ++i)
+        for (int i = 0; i < hitsCount; ++i)
+        {
+            var hit = _rayCastHits[i];
+            var bubble = hit.transform.GetComponent<Bubble>();
+            if (bubble == null)
             {
-                var hit = _rayCastHits[i];
-                var bubble = hit.transform.GetComponent<Bubble>();
-                if (bubble == null)
-                {
-                    continue;
-                }
-                bubble.Damage();
+                continue;
             }
+            bubble.Damage();
         }
     }
     

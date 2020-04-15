@@ -591,8 +591,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 353a0a08812ad594b8840cb5bd03776c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bubblePrefab: {fileID: 8416637451320134788, guid: 7d640e2c87ebe7b4496f49fc547f7a46,
-    type: 3}
   m_minSecondsDelay: 0.2
   m_maxSecondsDelay: 1
   m_maxLevel: 10
@@ -990,6 +988,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_mainCamera: {fileID: 287036619}
   m_gameMaster: {fileID: 318069118}
+  m_bubblePrefab: {fileID: 8416637451320134788, guid: 7d640e2c87ebe7b4496f49fc547f7a46,
+    type: 3}
 --- !u!1 &2095932917
 GameObject:
   m_ObjectHideFlags: 0

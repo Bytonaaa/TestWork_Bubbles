@@ -28,7 +28,13 @@ public class HUDMaster : MonoBehaviour
     private void Update()
     {
         var timer = _gameMaster.m_playSeconds - _gameMaster.m_secondsLeft;
-        m_timerField.text = timer.ToString("#.##");
+
+        if (m_timerField == null)
+        {
+            Debug.LogWarning("Timer Field property is null");
+            return;
+        }
+        m_timerField.text = timer.ToString("0.00");
     }
 
     private void OnGameEnd(int score)
@@ -38,6 +44,11 @@ public class HUDMaster : MonoBehaviour
     
     private void OnChangeScore(int score)
     {
+        if (m_scoreField == null)
+        {
+            Debug.LogWarning("Score Field property is null");
+            return;
+        }
         m_scoreField.text = score.ToString();
     }
 }
