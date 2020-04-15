@@ -40,14 +40,19 @@ public class BubblesSpawner : MonoBehaviour
 
     private IEnumerator SpawnCoroutine()
     {
-        var delay = Random.Range(m_minSecondsDelay, m_maxSecondsDelay);
-        yield return new WaitForSeconds(delay);
-        var instantiatePoint = m_spawnPoint + Vector2.right * Random.Range(-m_spawnLineHalfWidth, m_spawnLineHalfWidth);
-        var bubble = Instantiate(m_bubblePrefab, instantiatePoint, Quaternion.identity);
-        var level = Random.Range(1, m_maxLevel);
-        bubble.GetComponent<Bubble>().SetBubbleLevel(level);
-        
-        var size = Mathf.Lerp(m_minSize, m_maxSize, level / m_maxLevel);
-        bubble.transform.localScale = new Vector3(size, size, size);
+        while (true)
+        {
+            var instantiatePoint =
+                m_spawnPoint + Vector2.right * Random.Range(-m_spawnLineHalfWidth, m_spawnLineHalfWidth);
+            var bubble = Instantiate(m_bubblePrefab, instantiatePoint, Quaternion.identity);
+            var level = Random.Range(1, m_maxLevel);
+            bubble.GetComponent<Bubble>().SetBubbleLevel(level);
+
+            var size = Mathf.Lerp(m_maxSize, m_minSize, level / m_maxLevel);
+            bubble.transform.localScale = new Vector3(size, size, size);
+            
+            var delay = Random.Range(m_minSecondsDelay, m_maxSecondsDelay);
+            yield return new WaitForSeconds(delay);
+        }
     }
 }

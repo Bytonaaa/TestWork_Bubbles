@@ -8,7 +8,7 @@ public class PlayerInput : MonoBehaviour
     public LayerMask m_targetLayers;
     
     private Camera _playerCamera;
-    private readonly RaycastHit[] _rayCastHits = new RaycastHit[3];
+    private readonly RaycastHit2D[] _rayCastHits = new RaycastHit2D[3];
     private bool _isTouchDown;
     private Ray _touchRay;
     
@@ -54,7 +54,7 @@ public class PlayerInput : MonoBehaviour
             return;
         }
         
-        var hitsCount = Physics.RaycastNonAlloc(_touchRay, _rayCastHits, m_raycastDistance, m_targetLayers);
+        var hitsCount = Physics2D.RaycastNonAlloc(_touchRay.origin, _touchRay.direction, _rayCastHits, m_raycastDistance, m_targetLayers);
 
         for (int i = 0; i < hitsCount; ++i)
         {

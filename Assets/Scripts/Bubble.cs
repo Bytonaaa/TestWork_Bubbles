@@ -23,9 +23,9 @@ public class Bubble : MonoBehaviour
         _rigidbody.velocity = new Vector2(0, _speed);
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.transform.tag.Equals("BORDER"))
+        if (other.gameObject.tag.Equals("Border"))
         {
             Destroy(gameObject);
         }
